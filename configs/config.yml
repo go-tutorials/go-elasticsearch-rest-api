@@ -1,0 +1,21 @@
+server:
+  name: go-sql-rest-api
+  port: 8080
+
+db:
+  driver: mysql
+  data_source_name: devadmin:abcd1234@/masterdata?charset=utf8&parseTime=True&loc=Local
+
+log:
+  level: info
+  duration: duration
+  map:
+    time: "@timestamp"
+    msg: message
+
+middleware:
+  log: true
+  skips: /health
+  request: body
+  response: response
+  size: size
