@@ -3,18 +3,30 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/common-go/log"
+	"github.com/gorilla/mux"
+	config "go-service/configs"
+	"go-service/internal/app"
+	m "github.com/common-go/middleware"
 	"net/http"
 	"strconv"
-
-	//"github.com/common-go/config"
-	"github.com/common-go/log"
-	m "github.com/common-go/middleware"
-	"github.com/gorilla/mux"
-	"go-service/configs"
-	"go-service/internal/app"
 )
 
 func main() {
+	/*var conf app.Root
+	er1 := config.Load(&conf, "configs/config")
+	if er1 != nil {
+		panic(er1)
+	}
+	ctx := context.Background()
+
+	app, er2 := app.NewApp(ctx, conf)
+	if er2 != nil {
+		panic(er2)
+	}
+
+	go health.Serve(conf.Server, app.HealthHandler)
+	app.Consume(ctx, app.ConsumerHandler.Handle)*/
 	var conf app.Root
 	er1 := config.Load(&conf, "configs/config")
 	if er1 != nil {
@@ -29,7 +41,7 @@ func main() {
 	r.Use(m.Logger(conf.MiddleWare, log.InfoFields, logger))
 	r.Use(m.Recover(log.ErrorMsg))
 
-	var config app.ElasticClientConfig
+	var config app.Root
 	er2 := app.Route(r, context.Background(), config)
 	if er2 != nil {
 		panic(er2)
