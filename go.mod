@@ -13,6 +13,7 @@ require (
 	github.com/common-go/mq v1.1.8
 	github.com/common-go/validator v0.0.8
 	github.com/elastic/go-elasticsearch v0.0.0 // indirect
+	github.com/elastic/go-elasticsearch/v7 v7.12.0 // indirect
 	github.com/go-playground/validator/v10 v10.5.0
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
