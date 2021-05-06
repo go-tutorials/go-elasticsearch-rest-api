@@ -13,20 +13,6 @@ import (
 )
 
 func main() {
-	/*var conf app.Root
-	er1 := config.Load(&conf, "configs/config")
-	if er1 != nil {
-		panic(er1)
-	}
-	ctx := context.Background()
-
-	app, er2 := app.NewApp(ctx, conf)
-	if er2 != nil {
-		panic(er2)
-	}
-
-	go health.Serve(conf.Server, app.HealthHandler)
-	app.Consume(ctx, app.ConsumerHandler.Handle)*/
 	var conf app.Root
 	er1 := config.Load(&conf, "configs/config")
 	if er1 != nil {
