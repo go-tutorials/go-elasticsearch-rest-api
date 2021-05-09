@@ -35,5 +35,7 @@ func main() {
 		panic(er2)
 	}
 	fmt.Println(sv.ServerInfo(conf.Server))
-	http.ListenAndServe(sv.Addr(conf.Server.Port), r)
+	if er3 := http.ListenAndServe(sv.Addr(conf.Server.Port), r); er3 != nil {
+		fmt.Println(er3.Error())
+	}
 }
