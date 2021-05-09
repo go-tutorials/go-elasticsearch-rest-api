@@ -3,27 +3,25 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/core-go/health"
+	es "github.com/core-go/health/elasticsearch/v7"
+	"github.com/core-go/log"
 	"github.com/elastic/go-elasticsearch/v7"
-	"github.com/go-playground/validator/v10"
+
 	"go-service/internal/handlers"
 	"go-service/internal/services"
-	"github.com/common-go/health"
-	"github.com/common-go/log"
-	"github.com/common-go/mq"
 )
 
 type ApplicationContext struct {
-	HealthHandler   *health.HealthHandler
-	UserHandler   	*handlers.UserHandler
-	Consume         func(ctx context.Context, handle func(context.Context, *mq.Message, error) error)
-	ConsumerHandler mq.ConsumerHandler
+	HealthHandler *health.HealthHandler
+	UserHandler   *handlers.UserHandler
 }
 
 func NewApp(ctx context.Context, root Root) (*ApplicationContext, error) {
 	log.Initialize(root.Log)
 
 	cfg := elasticsearch.Config{
-		Addresses: []string{"http://localhost:9200"},
+		Addresses: []string{root.ElasticSearch.Url},
 		//Username: "<username>",
 		//Password: "<password>",
 	}
@@ -42,14 +40,14 @@ func NewApp(ctx context.Context, root Root) (*ApplicationContext, error) {
 		fmt.Println("Elastic server response:", res)
 	}
 
-	userService := services.NewEUserService(client)
+	userService := services.NewUserService(client)
 	userHandler := handlers.NewUserHandler(userService)
 
+	elasticSearchChecker := es.NewHealthChecker(client)
+	healthHandler := health.NewHealthHandler(elasticSearchChecker)
+
 	return &ApplicationContext{
+		HealthHandler: healthHandler,
 		UserHandler:   userHandler,
 	}, nil
-}
-
-func CheckActive(fl validator.FieldLevel) bool {
-	return fl.Field().Bool()
 }

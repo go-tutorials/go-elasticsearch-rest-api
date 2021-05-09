@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/common-go/log"
+	"github.com/core-go/config"
+	"github.com/core-go/log"
+	mid "github.com/core-go/log/middleware"
+	sv "github.com/core-go/service"
 	"github.com/gorilla/mux"
-	config "go-service/configs"
-	"go-service/internal/app"
-	m "github.com/common-go/middleware"
 	"net/http"
-	"strconv"
+
+	"go-service/internal/app"
 )
 
 func main() {
@@ -22,20 +23,17 @@ func main() {
 	r := mux.NewRouter()
 
 	log.Initialize(conf.Log)
-	r.Use(m.BuildContext)
-	logger := m.NewStructuredLogger()
-	r.Use(m.Logger(conf.MiddleWare, log.InfoFields, logger))
-	r.Use(m.Recover(log.ErrorMsg))
+	r.Use(mid.BuildContext)
+	logger := mid.NewStructuredLogger()
+	if log.IsInfoEnable() {
+		r.Use(mid.Logger(conf.MiddleWare, log.InfoFields, logger))
+	}
+	r.Use(mid.Recover(log.PanicMsg))
 
-	var config app.Root
-	er2 := app.Route(r, context.Background(), config)
+	er2 := app.Route(r, context.Background(), conf)
 	if er2 != nil {
 		panic(er2)
 	}
-	fmt.Println("Start server on port 5000")
-	server := ""
-	if conf.Server.Port > 0 {
-		server = ":" + strconv.Itoa(5000)
-	}
-	http.ListenAndServe(server, r)
+	fmt.Println(sv.ServerInfo(conf.Server))
+	http.ListenAndServe(sv.Addr(conf.Server.Port), r)
 }

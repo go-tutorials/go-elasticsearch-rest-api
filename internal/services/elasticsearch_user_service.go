@@ -6,20 +6,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/elastic/go-elasticsearch/v7"
-	_ "github.com/elastic/go-elasticsearch/v7"
 	"github.com/elastic/go-elasticsearch/v7/esapi"
-	"go-service/internal/models"
-	_ "go-service/internal/models"
 	"reflect"
 	"strings"
+
+	"go-service/internal/models"
 )
 
-type ElasticUserService struct {
+type ElasticSearchUserService struct {
 	elastic *elasticsearch.Client
 }
 
-func NewEUserService(ela *elasticsearch.Client) *ElasticUserService {
-	return &ElasticUserService{elastic: ela}
+func NewUserService(ela *elasticsearch.Client) *ElasticSearchUserService {
+	return &ElasticSearchUserService{elastic: ela}
 }
 
 func convertDocToJson(doc interface{}) string {
@@ -37,11 +36,11 @@ func SetField(obj interface{}, name string, value interface{}) error {
 	structFieldValue := structValue.FieldByName(name)
 
 	if !structFieldValue.IsValid() {
-		return fmt.Errorf("No such field: %s in obj", name)
+		return fmt.Errorf("no such field: %s in obj", name)
 	}
 
 	if !structFieldValue.CanSet() {
-		return fmt.Errorf("Cannot set %s field value", name)
+		return fmt.Errorf("cannot set %s field value", name)
 	}
 
 	/*structFieldType := structFieldValue.Type()
@@ -71,7 +70,7 @@ func transcode(in, out interface{})  {
 	json.NewDecoder(buf).Decode(out)
 }
 
-func (e *ElasticUserService) Insert(ctx context.Context, user *models.User) (int64, error) {
+func (e *ElasticSearchUserService) Insert(ctx context.Context, user *models.User) (int64, error) {
 	if user == nil {
 		fmt.Print("Can not add null user")
 		return 0, nil
@@ -109,7 +108,7 @@ func (e *ElasticUserService) Insert(ctx context.Context, user *models.User) (int
 	return 1, nil
 }
 
-func (e *ElasticUserService) GetAll(ctx context.Context) (*[]models.User, error) {
+func (e *ElasticSearchUserService) GetAll(ctx context.Context) (*[]models.User, error) {
 	var listUser []models.User
 	var mapResponse map[string]interface{}
 	var buf bytes.Buffer
@@ -125,7 +124,7 @@ func (e *ElasticUserService) GetAll(ctx context.Context) (*[]models.User, error)
 
 	err := json.NewEncoder(&buf).Encode(queryString)
 	if err != nil {
-		fmt.Print("Error during encoding the query : %s", err.Error())
+		fmt.Print("error during encoding the query : %s", err.Error())
 	}
 
 	result, err := e.elastic.Search(
@@ -161,7 +160,7 @@ func (e *ElasticUserService) GetAll(ctx context.Context) (*[]models.User, error)
 }
 
 
-func (e *ElasticUserService) Load(ctx context.Context, id string) (*models.User, error) {
+func (e *ElasticSearchUserService) Load(ctx context.Context, id string) (*models.User, error) {
 	var listUser []models.User
 	var mapResponse map[string]interface{}
 	var buf bytes.Buffer
@@ -213,7 +212,7 @@ func (e *ElasticUserService) Load(ctx context.Context, id string) (*models.User,
 	return u, nil
 }
 
-func (e *ElasticUserService) Update(ctx context.Context, user *models.User) (int64, error) {
+func (e *ElasticSearchUserService) Update(ctx context.Context, user *models.User) (int64, error) {
 	userJsonString := convertDocToJson(user)
 	request := esapi.UpdateRequest{
 		Index: "users",
@@ -242,11 +241,11 @@ func (e *ElasticUserService) Update(ctx context.Context, user *models.User) (int
 	fmt.Println("IndexRequest to update Status: ", response.Status())
 	fmt.Println("Result: ", result["result"])
 
-	fmt.Print("The user %v has been updated successfully.", user.Username)
+	fmt.Print("the user %v has been updated successfully", user.Username)
 	return 1, nil
 }
 
-func (e *ElasticUserService) Patch(ctx context.Context, id string, user map[string]interface{}) (int64, error) {
+func (e *ElasticSearchUserService) Patch(ctx context.Context, id string, user map[string]interface{}) (int64, error) {
 
 	userJsonString := convertDocToJson(user)
 	var userid = reflect.ValueOf(user["_id"])
@@ -278,11 +277,11 @@ func (e *ElasticUserService) Patch(ctx context.Context, id string, user map[stri
 	fmt.Println("IndexRequest to update Status: ", response.Status())
 	fmt.Println("Result: ", result["result"])
 
-	fmt.Print("The user %v has been updated successfully.", userid.String())
+	fmt.Print("the user %v has been updated successfully.", userid.String())
 	return 1, nil
 }
 
-func (e *ElasticUserService) Delete(ctx context.Context, id string) (int64, error) {
+func (e *ElasticSearchUserService) Delete(ctx context.Context, id string) (int64, error) {
 	request := esapi.DeleteRequest{
 		Index: "users",
 		DocumentID: id,
@@ -308,6 +307,6 @@ func (e *ElasticUserService) Delete(ctx context.Context, id string) (int64, erro
 	fmt.Println("IndexRequest to update Status: ", response.Status())
 	fmt.Println("Result: ", result["result"])
 
-	fmt.Print("Delete user: %s successfully.", id)
+	fmt.Print("delete user: %s successfully", id)
 	return 1, nil
 }
