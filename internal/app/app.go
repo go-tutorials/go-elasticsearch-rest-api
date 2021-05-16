@@ -23,7 +23,6 @@ func NewApp(ctx context.Context, root Root) (*ApplicationContext, error) {
 	cfg := elasticsearch.Config{Addresses: []string{root.ElasticSearch.Url}}
 
 	client, er1 := elasticsearch.NewClient(cfg)
-
 	if er1 != nil {
 		log.Error(ctx, "Cannot connect to elasticSearch. Error: "+er1.Error())
 		return nil, er1
