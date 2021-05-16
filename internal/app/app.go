@@ -20,25 +20,21 @@ type ApplicationContext struct {
 func NewApp(ctx context.Context, root Root) (*ApplicationContext, error) {
 	log.Initialize(root.Log)
 
-	cfg := elasticsearch.Config{
-		Addresses: []string{root.ElasticSearch.Url},
-		//Username: "<username>",
-		//Password: "<password>",
-	}
+	cfg := elasticsearch.Config{Addresses: []string{root.ElasticSearch.Url}}
 
 	client, er1 := elasticsearch.NewClient(cfg)
 
 	if er1 != nil {
-		log.Error(ctx, "Cannot connect to elasticSearch: Error: "+er1.Error())
+		log.Error(ctx, "Cannot connect to elasticSearch. Error: "+er1.Error())
 		return nil, er1
 	}
 
-	res, err := client.Info()
-	if err != nil {
-		fmt.Println("Elastic server Error:", err)
-	} else {
-		fmt.Println("Elastic server response:", res)
+	res, er2 := client.Info()
+	if er2 != nil {
+		log.Error(ctx, "Elastic server Error: " + er2.Error())
+		return nil, er2
 	}
+	fmt.Println("Elastic server response: ", res)
 
 	userService := services.NewUserService(client)
 	userHandler := handlers.NewUserHandler(userService)
