@@ -13,7 +13,7 @@ import (
 )
 
 type ApplicationContext struct {
-	HealthHandler *health.HealthHandler
+	HealthHandler *health.Handler
 	UserHandler   *handlers.UserHandler
 }
 
@@ -39,7 +39,7 @@ func NewApp(ctx context.Context, root Root) (*ApplicationContext, error) {
 	userHandler := handlers.NewUserHandler(userService)
 
 	elasticSearchChecker := es.NewHealthChecker(client)
-	healthHandler := health.NewHealthHandler(elasticSearchChecker)
+	healthHandler := health.NewHandler(elasticSearchChecker)
 
 	return &ApplicationContext{
 		HealthHandler: healthHandler,

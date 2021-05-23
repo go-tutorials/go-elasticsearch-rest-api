@@ -7,7 +7,6 @@ elastic_search:
 
 log:
   level: info
-  duration: duration
   map:
     time: "@timestamp"
     msg: message
@@ -15,6 +14,6 @@ log:
 middleware:
   log: true
   skips: /health
-  request: body
+  request: request
   response: response
   size: size

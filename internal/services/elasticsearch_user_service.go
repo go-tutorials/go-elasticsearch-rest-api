@@ -53,23 +53,6 @@ func SetField(obj interface{}, name string, value interface{}) error {
 	return nil
 }
 
-func DecodeMapToStruct(m map[string]interface{}) (u *models.User)  {
-	for k, v := range m {
-		err := SetField(u, k, v)
-		if err != nil {
-			return nil
-		}
-		return u
-	}
-	return nil
-}
-
-func transcode(in, out interface{})  {
-	buf := new(bytes.Buffer)
-	json.NewEncoder(buf).Encode(in)
-	json.NewDecoder(buf).Decode(out)
-}
-
 func (e *ElasticSearchUserService) Insert(ctx context.Context, user *models.User) (int64, error) {
 	if user == nil {
 		fmt.Print("Can not add null user")
@@ -104,7 +87,7 @@ func (e *ElasticSearchUserService) Insert(ctx context.Context, user *models.User
 	fmt.Println("IndexRequest to insert Status: ", response.Status())
 	fmt.Println("Result: ", result["result"])
 
-	fmt.Print("The new user %v has been added successfully.", user.Username)
+	fmt.Printf("the new user %v has been added successfully", user.Username)
 	return 1, nil
 }
 
