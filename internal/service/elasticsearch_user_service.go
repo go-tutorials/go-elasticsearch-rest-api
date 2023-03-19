@@ -91,7 +91,7 @@ func (e *ElasticSearchUserService) Insert(ctx context.Context, user *model.User)
 	return 1, nil
 }
 
-func (e *ElasticSearchUserService) GetAll(ctx context.Context) (*[]model.User, error) {
+func (e *ElasticSearchUserService) All(ctx context.Context) (*[]model.User, error) {
 	var listUser []model.User
 	var mapResponse map[string]interface{}
 	var buf bytes.Buffer
