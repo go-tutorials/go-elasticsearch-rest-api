@@ -86,7 +86,7 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	respond(w, result)
 }
 /*
-func (h *UserHandler) Patch(w http.ResponseWriter, r *http.Request) {
+func (h *User) Patch(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	if len(id) == 0 {
 		http.Error(w, "Id cannot be empty", http.StatusBadRequest)
