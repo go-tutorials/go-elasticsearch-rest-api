@@ -85,40 +85,7 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	respond(w, result)
 }
-/*
-func (h *User) Patch(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
-	if len(id) == 0 {
-		http.Error(w, "Id cannot be empty", http.StatusBadRequest)
-		return
-	}
 
-	ids := []string{"id"}
-
-	var user User
-	userType := reflect.TypeOf(user)
-	_, jsonMap := sv.BuildMapField(userType)
-	body, _ := sv.BuildMapAndStruct(r, &user)
-	if len(user.Id) == 0 {
-		user.Id = id
-	} else if id != user.Id {
-		http.Error(w, "Id not match", http.StatusBadRequest)
-		return
-	}
-	json, er1 := sv.BodyToJson(r, user, body, ids, jsonMap, nil)
-	if er1 != nil {
-		http.Error(w, er1.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	result, er2 := h.service.Patch(r.Context(), json)
-	if er2 != nil {
-		http.Error(w, er2.Error(), http.StatusInternalServerError)
-		return
-	}
-	respond(w, result)
-}
-*/
 func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	if len(id) == 0 {
