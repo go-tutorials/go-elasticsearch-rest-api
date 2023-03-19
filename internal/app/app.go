@@ -17,10 +17,10 @@ type ApplicationContext struct {
 	UserHandler   *handler.UserHandler
 }
 
-func NewApp(ctx context.Context, root Root) (*ApplicationContext, error) {
-	log.Initialize(root.Log)
+func NewApp(ctx context.Context, config Config) (*ApplicationContext, error) {
+	log.Initialize(config.Log)
 
-	cfg := elasticsearch.Config{Addresses: []string{root.ElasticSearch.Url}}
+	cfg := elasticsearch.Config{Addresses: []string{config.ElasticSearch.Url}}
 
 	client, err := elasticsearch.NewClient(cfg)
 	if err != nil {

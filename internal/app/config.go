@@ -6,7 +6,7 @@ import (
 	mid "github.com/core-go/log/middleware"
 )
 
-type Root struct {
+type Config struct {
 	Server        core.ServerConf     `mapstructure:"server"`
 	ElasticSearch ElasticSearchConfig `mapstructure:"elastic_search"`
 	Log           log.Config          `mapstructure:"log"`

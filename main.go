@@ -14,10 +14,10 @@ import (
 )
 
 func main() {
-	var conf app.Root
-	er1 := config.Load(&conf, "configs/config")
-	if er1 != nil {
-		panic(er1)
+	var conf app.Config
+	err := config.Load(&conf, "configs/config")
+	if err != nil {
+		panic(err)
 	}
 
 	r := mux.NewRouter()
@@ -30,12 +30,12 @@ func main() {
 	}
 	r.Use(mid.Recover(log.PanicMsg))
 
-	er2 := app.Route(r, context.Background(), conf)
-	if er2 != nil {
-		panic(er2)
+	err = app.Route(r, context.Background(), conf)
+	if err != nil {
+		panic(err)
 	}
 	fmt.Println(core.ServerInfo(conf.Server))
-	if er3 := http.ListenAndServe(core.Addr(conf.Server.Port), r); er3 != nil {
-		fmt.Println(er3.Error())
+	if err = http.ListenAndServe(core.Addr(conf.Server.Port), r); err != nil {
+		fmt.Println(err.Error())
 	}
 }
