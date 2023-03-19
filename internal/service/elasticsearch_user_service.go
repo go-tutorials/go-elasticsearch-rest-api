@@ -1,4 +1,4 @@
-package services
+package service
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"reflect"
 	"strings"
 
-	"go-service/internal/models"
+	"go-service/internal/model"
 )
 
 type ElasticSearchUserService struct {
@@ -53,7 +53,7 @@ func SetField(obj interface{}, name string, value interface{}) error {
 	return nil
 }
 
-func (e *ElasticSearchUserService) Insert(ctx context.Context, user *models.User) (int64, error) {
+func (e *ElasticSearchUserService) Insert(ctx context.Context, user *model.User) (int64, error) {
 	if user == nil {
 		fmt.Print("Can not add null user")
 		return 0, nil
@@ -91,8 +91,8 @@ func (e *ElasticSearchUserService) Insert(ctx context.Context, user *models.User
 	return 1, nil
 }
 
-func (e *ElasticSearchUserService) GetAll(ctx context.Context) (*[]models.User, error) {
-	var listUser []models.User
+func (e *ElasticSearchUserService) GetAll(ctx context.Context) (*[]model.User, error) {
+	var listUser []model.User
 	var mapResponse map[string]interface{}
 	var buf bytes.Buffer
 
@@ -125,8 +125,8 @@ func (e *ElasticSearchUserService) GetAll(ctx context.Context) (*[]models.User, 
 		fmt.Println("Error parsing the result to User type:", err.Error())
 	}
 
-	var u = &models.User{}
-	//var decodedUser models.User{}
+	var u = &model.User{}
+	//var decodedUser model.User{}
 	for _, hit := range mapResponse["hits"].(map[string]interface{})["hits"].([]interface{}) {
 		user := hit.(map[string]interface{})
 
@@ -143,8 +143,8 @@ func (e *ElasticSearchUserService) GetAll(ctx context.Context) (*[]models.User, 
 }
 
 
-func (e *ElasticSearchUserService) Load(ctx context.Context, id string) (*models.User, error) {
-	var listUser []models.User
+func (e *ElasticSearchUserService) Load(ctx context.Context, id string) (*model.User, error) {
+	var listUser []model.User
 	var mapResponse map[string]interface{}
 	var buf bytes.Buffer
 
@@ -178,8 +178,8 @@ func (e *ElasticSearchUserService) Load(ctx context.Context, id string) (*models
 		fmt.Println("Error parsing the result to User type:", err.Error())
 	}
 
-	var u = &models.User{}
-	//var decodedUser models.User{}
+	var u = &model.User{}
+	//var decodedUser model.User{}
 	for _, hit := range mapResponse["hits"].(map[string]interface{})["hits"].([]interface{}) {
 		user := hit.(map[string]interface{})
 
@@ -195,7 +195,7 @@ func (e *ElasticSearchUserService) Load(ctx context.Context, id string) (*models
 	return u, nil
 }
 
-func (e *ElasticSearchUserService) Update(ctx context.Context, user *models.User) (int64, error) {
+func (e *ElasticSearchUserService) Update(ctx context.Context, user *model.User) (int64, error) {
 	userJsonString := convertDocToJson(user)
 	request := esapi.UpdateRequest{
 		Index: "users",
