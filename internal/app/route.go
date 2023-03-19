@@ -26,7 +26,6 @@ func Route(r *mux.Router, ctx context.Context, config Config) error {
 	r.HandleFunc(userPath+"/{id}", app.UserHandler.Load).Methods(GET)
 	r.HandleFunc(userPath, app.UserHandler.Insert).Methods(POST)
 	r.HandleFunc(userPath+"/{id}", app.UserHandler.Update).Methods(PUT)
-	//r.HandleFunc(userPath+"/{id}", app.UserHandler.Patch).Methods(PATCH)
 	r.HandleFunc(userPath+"/{id}", app.UserHandler.Delete).Methods(DELETE)
 
 	return nil
