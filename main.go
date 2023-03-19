@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/core-go/config"
+	"github.com/core-go/core"
 	"github.com/core-go/log"
 	mid "github.com/core-go/log/middleware"
-	sv "github.com/core-go/service"
 	"github.com/gorilla/mux"
 	"net/http"
 
@@ -24,7 +24,7 @@ func main() {
 
 	log.Initialize(conf.Log)
 	r.Use(mid.BuildContext)
-	logger := mid.NewStructuredLogger()
+	logger := mid.NewLogger()
 	if log.IsInfoEnable() {
 		r.Use(mid.Logger(conf.MiddleWare, log.InfoFields, logger))
 	}
@@ -34,8 +34,8 @@ func main() {
 	if er2 != nil {
 		panic(er2)
 	}
-	fmt.Println(sv.ServerInfo(conf.Server))
-	if er3 := http.ListenAndServe(sv.Addr(conf.Server.Port), r); er3 != nil {
+	fmt.Println(core.ServerInfo(conf.Server))
+	if er3 := http.ListenAndServe(core.Addr(conf.Server.Port), r); er3 != nil {
 		fmt.Println(er3.Error())
 	}
 }

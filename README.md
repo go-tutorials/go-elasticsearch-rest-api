@@ -1,10 +1,10 @@
-# go-elasticsearch-rest-api
+# go-elasticsearch-tutorial
 
 ## How to run
 #### Clone the repository
 ```shell
-git clone https://github.com/go-tutorials/go-elasticsearch-rest-api.git
-cd go-mongo-elasticsearch-api
+git clone https://github.com/go-tutorials/go-elasticsearch-tutorial.git
+cd go-elasticsearch-tutorial
 ```
 
 #### To run the application
@@ -17,7 +17,7 @@ go run main.go
 - GET: retrieve a representation of the resource
 - POST: create a new resource
 - PUT: update the resource
-- PATCH: perform a partial update of a resource, refer to [service](https://github.com/core-go/service) and [mongo](https://github.com/core-go/elasticsearch)  
+- PATCH: perform a partial update of a resource, refer to [core](https://github.com/core-go/core) and [elasticsearch](https://github.com/core-go/elasticsearch)  
 - DELETE: delete a resource
 
 ## API design for health check
@@ -139,9 +139,9 @@ We must solve the problem:
 - At http handler layer, we must convert the user struct to map, with json format, and make sure the nested data types are passed correctly.
 
 #### Solutions for patch  
-- At http handler layer, we use [core-go/service](https://github.com/core-go/service), to convert the user struct to map, to make sure we just update the fields we need to update
+- At http handler layer, we use [core-go/core](https://github.com/core-go/core), to convert the user struct to map, to make sure we just update the fields we need to update
 ```go
-import server "github.com/core-go/service"
+import server "github.com/core-go/core"
 
 func (h *UserHandler) Patch(w http.ResponseWriter, r *http.Request) {
     var user User
