@@ -18,7 +18,7 @@ func Route(ctx context.Context, r *mux.Router, config Config) error {
 		return err
 	}
 
-	// r.HandleFunc("/health", app.Health.Check).Methods(GET)
+	r.HandleFunc("/health", app.Health.Check).Methods(GET)
 
 	userPath := "/users"
 	r.HandleFunc(userPath, app.User.All).Methods(GET)
