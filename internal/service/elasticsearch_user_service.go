@@ -57,13 +57,12 @@ func (e *ElasticSearchUserService) All(ctx context.Context) (*[]model.User, erro
 	query := `{
   "query": {
     "match_all": {}
-  },
-  "size": 1
+  }
 }`
 
 	var queryString = strings.NewReader(query)
 
-	err := json.NewEncoder(&buf).Encode(queryString)
+	err := json.NewEncoder(&buf).Encode(&queryString)
 	if err != nil {
 		fmt.Print("error during encoding the query: ", err.Error())
 	}
@@ -89,6 +88,7 @@ func (e *ElasticSearchUserService) All(ctx context.Context) (*[]model.User, erro
 		user := hit.(map[string]interface{})
 
 		source := user["_source"]
+		u.Id = user["_id"].(string)
 		//userId := user["_id"]
 		//u = DecodeMapToStruct(user)
 		fmt.Println("This is the source:")
@@ -117,7 +117,7 @@ func (e *ElasticSearchUserService) Load(ctx context.Context, id string) (*model.
 	query = strings.Replace(query, "{0}", id, 1)
 	var queryString = strings.NewReader(query)
 
-	err := json.NewEncoder(&buf).Encode(queryString)
+	err := json.NewEncoder(&buf).Encode(&queryString)
 	if err != nil {
 		fmt.Print("Error during encoding the query : ", err.Error())
 	}
@@ -172,8 +172,7 @@ func (e *ElasticSearchUserService) Insert(ctx context.Context, user *model.User)
 	response, err := request.Do(ctx, e.elastic)
 
 	if err != nil {
-		panic(err)
-		return 0, nil
+		return 0, err
 	}
 
 	defer response.Body.Close()
@@ -183,8 +182,7 @@ func (e *ElasticSearchUserService) Insert(ctx context.Context, user *model.User)
 	err = json.NewDecoder(response.Body).Decode(&result)
 
 	if err != nil {
-		panic(err)
-		return 0, nil
+		return -1, err
 	}
 
 	fmt.Println("IndexRequest to insert Status: ", response.Status())
@@ -207,8 +205,7 @@ func (e *ElasticSearchUserService) Update(ctx context.Context, user *model.User)
 	response, err := request.Do(ctx, e.elastic)
 
 	if err != nil {
-		panic(err)
-		return 0, nil
+		return -1, err
 	}
 
 	defer response.Body.Close()
@@ -218,14 +215,13 @@ func (e *ElasticSearchUserService) Update(ctx context.Context, user *model.User)
 	err = json.NewDecoder(response.Body).Decode(&result)
 
 	if err != nil {
-		panic(err)
-		return 0, nil
+		return -1, err
 	}
 
 	fmt.Println("IndexRequest to update Status: ", response.Status())
 	fmt.Println("Result: ", result)
 
-	fmt.Print("the user %v has been updated successfully", user.Username)
+	fmt.Printf("the user %v has been updated successfully", user.Username)
 	return 1, nil
 }
 
@@ -241,8 +237,7 @@ func (e *ElasticSearchUserService) Patch(ctx context.Context, user map[string]in
 	response, err := request.Do(ctx, e.elastic)
 
 	if err != nil {
-		panic(err)
-		return 0, nil
+		return -1, err
 	}
 
 	defer response.Body.Close()
@@ -252,14 +247,13 @@ func (e *ElasticSearchUserService) Patch(ctx context.Context, user map[string]in
 	err = json.NewDecoder(response.Body).Decode(&result)
 
 	if err != nil {
-		panic(err)
-		return 0, nil
+		return -1, err
 	}
 
 	fmt.Println("IndexRequest to update Status: ", response.Status())
 	fmt.Println("Result: ", result["result"])
 
-	fmt.Print("the user %v has been updated successfully.", userid.String())
+	fmt.Printf("the user %v has been updated successfully.", userid.String())
 	return 1, nil
 }
 
@@ -271,8 +265,7 @@ func (e *ElasticSearchUserService) Delete(ctx context.Context, id string) (int64
 	response, err := request.Do(ctx, e.elastic)
 
 	if err != nil {
-		panic(err)
-		return 0, nil
+		return -1, err
 	}
 
 	defer response.Body.Close()
@@ -282,13 +275,12 @@ func (e *ElasticSearchUserService) Delete(ctx context.Context, id string) (int64
 	err = json.NewDecoder(response.Body).Decode(&result)
 
 	if err != nil {
-		panic(err)
-		return 0, nil
+		return -1, err
 	}
 
 	fmt.Println("IndexRequest to update Status: ", response.Status())
 	fmt.Println("Result: ", result["result"])
 
-	fmt.Print("delete user: %s successfully", id)
+	fmt.Printf("delete user: %s successfully", id)
 	return 1, nil
 }
