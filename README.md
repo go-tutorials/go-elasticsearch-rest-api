@@ -190,8 +190,8 @@ To check if the service is available, refer to [core-go/health](https://github.c
 ```
 To create health checker, and health handler
 ```go
-	cfg := elasticsearch.Config{Addresses: []string{root.ElasticSearch.Url}}
-	client, _ := elasticsearch.NewClient(cfg)
+    cfg := elasticsearch.Config{Addresses: []string{root.ElasticSearch.Url}}
+    client, _ := elasticsearch.NewClient(cfg)
 
     elasticSearchChecker := es.NewHealthChecker(client)
     healthHandler := health.NewHealthHandler(elasticSearchChecker)

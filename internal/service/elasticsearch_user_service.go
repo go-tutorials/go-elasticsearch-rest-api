@@ -49,8 +49,8 @@ func SetField(obj interface{}, name string, value interface{}) error {
 	return nil
 }
 
-func (e *ElasticSearchUserService) All(ctx context.Context) (*[]model.User, error) {
-	var listUser []model.User
+func (e *ElasticSearchUserService) All(ctx context.Context) ([]model.User, error) {
+	var users []model.User
 	var mapResponse map[string]interface{}
 	var buf bytes.Buffer
 
@@ -96,10 +96,10 @@ func (e *ElasticSearchUserService) All(ctx context.Context) (*[]model.User, erro
 		fmt.Println(source)
 		bytes, _ := json.Marshal(source)
 		_ = json.Unmarshal(bytes, u)
-		listUser = append(listUser, *u)
+		users = append(users, *u)
 
 	}
-	return &listUser, nil
+	return users, nil
 }
 
 func (e *ElasticSearchUserService) Load(ctx context.Context, id string) (*model.User, error) {
