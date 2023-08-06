@@ -32,23 +32,6 @@ func convertDocToJson(doc interface{}) string {
 	return string(jsonString)
 }
 
-func SetField(obj interface{}, name string, value interface{}) error {
-	structValue := reflect.ValueOf(obj).Elem()
-	structFieldValue := structValue.FieldByName(name)
-
-	if !structFieldValue.IsValid() {
-		return fmt.Errorf("no such field: %s in obj", name)
-	}
-
-	if !structFieldValue.CanSet() {
-		return fmt.Errorf("cannot set %s field value", name)
-	}
-
-	val := reflect.ValueOf(value)
-	structFieldValue.Set(val)
-	return nil
-}
-
 func (e *ElasticSearchUserService) All(ctx context.Context) ([]model.User, error) {
 	var users []model.User
 	var mapResponse map[string]interface{}
@@ -65,6 +48,7 @@ func (e *ElasticSearchUserService) All(ctx context.Context) ([]model.User, error
 	err := json.NewEncoder(&buf).Encode(&queryString)
 	if err != nil {
 		fmt.Print("error during encoding the query: ", err.Error())
+		return users, err
 	}
 
 	result, err := e.elastic.Search(
@@ -80,22 +64,26 @@ func (e *ElasticSearchUserService) All(ctx context.Context) ([]model.User, error
 	fmt.Println("This is map response: ", mapResponse)
 	if err != nil {
 		fmt.Println("Error parsing the result to User type:", err.Error())
+		return users, err
 	}
 
 	var u = &model.User{}
-	//var decodedUser model.User{}
 	for _, hit := range mapResponse["hits"].(map[string]interface{})["hits"].([]interface{}) {
 		user := hit.(map[string]interface{})
 
 		source := user["_source"]
 		u.Id = user["_id"].(string)
-		//userId := user["_id"]
-		//u = DecodeMapToStruct(user)
 		fmt.Println("This is the source:")
-
 		fmt.Println(source)
-		bytes, _ := json.Marshal(source)
-		_ = json.Unmarshal(bytes, u)
+
+		bytes, err := json.Marshal(source)
+		if err != nil {
+			return users, err
+		}
+		err = json.Unmarshal(bytes, u)
+		if err != nil {
+			return users, err
+		}
 		users = append(users, *u)
 
 	}
@@ -103,7 +91,6 @@ func (e *ElasticSearchUserService) All(ctx context.Context) ([]model.User, error
 }
 
 func (e *ElasticSearchUserService) Load(ctx context.Context, id string) (*model.User, error) {
-	var listUser []model.User
 	var mapResponse map[string]interface{}
 	var buf bytes.Buffer
 
@@ -120,6 +107,7 @@ func (e *ElasticSearchUserService) Load(ctx context.Context, id string) (*model.
 	err := json.NewEncoder(&buf).Encode(&queryString)
 	if err != nil {
 		fmt.Print("Error during encoding the query : ", err.Error())
+		return nil, err
 	}
 
 	result, err := e.elastic.Search(
@@ -132,28 +120,33 @@ func (e *ElasticSearchUserService) Load(ctx context.Context, id string) (*model.
 	defer result.Body.Close()
 
 	err = json.NewDecoder(result.Body).Decode(&mapResponse)
+	if err != nil {
+		return nil, err
+	}
 	fmt.Println("This is map response: ", mapResponse)
 	if err != nil {
 		fmt.Println("Error parsing the result to User type:", err.Error())
 	}
 
 	var u = &model.User{}
-	//var decodedUser model.User{}
 	for _, hit := range mapResponse["hits"].(map[string]interface{})["hits"].([]interface{}) {
 		user := hit.(map[string]interface{})
 
 		source := user["_source"]
-		//userId := user["_id"]
-		//u = DecodeMapToStruct(user)
 		fmt.Println("This is the source:")
-
 		fmt.Println(source)
-		bytes, _ := json.Marshal(source)
-		_ = json.Unmarshal(bytes, u)
-		listUser = append(listUser, *u)
 
+		bytes, err:= json.Marshal(source)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(bytes, u)
+		if err != nil {
+			return nil, err
+		}
+		return u, nil
 	}
-	return u, nil
+	return nil, nil
 }
 
 func (e *ElasticSearchUserService) Insert(ctx context.Context, user *model.User) (int64, error) {
